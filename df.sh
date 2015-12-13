@@ -23,7 +23,7 @@ until [ "$selection" = "0" ]; do
     echo -e " ##                                                           ##"
     echo -e " ##             ${NC}** USE AT YOUR OWN RISK **${GREEN}                    ##"
     echo -e " ##                                                           ##"
-    echo -e " ##                     Version: alpha 1.1                    ##"
+    echo -e " ##                     Version: alpha 1.2                    ##"
     echo -e " ###############################################################" 
     echo -e "${NC}"
     echo ""
