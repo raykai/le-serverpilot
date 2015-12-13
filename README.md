@@ -5,13 +5,14 @@ SH script to install / manage Lets Encrypt for Server Pilot free users
 
 ##Requirements
 
-> Ubuntu 14.04 
-> Server running with Serverpilot
-> Root User Access
+ Ubuntu 14.04 
+ Server running with Serverpilot
+ Root User Access
 
 ##How to Install
 
 ```
+git clone https://github.com/dfinnema/le-serverpilot.git
 cd le-df
 chmod +x df.sh
 ```
