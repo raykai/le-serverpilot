@@ -145,8 +145,8 @@ if [ $DFRUN == "y" ]; then
             ServerName server-${MYAPP}
             ServerAlias ${MYDOMAIN}
 
-            ErrorLog \"/srv/users/serverpilot/log/MYAPP/MYAPP_apache.error.log\"
-            CustomLog \"/srv/users/serverpilot/log/MYAPP/MYAPP_apache.access.log\" common
+            ErrorLog \"/srv/users/serverpilot/log/${MYAPP}/${MYAPP}_apache.error.log\"
+            CustomLog \"/srv/users/serverpilot/log/${MYAPP}/${MYAPP}_apache.access.log\" common
 
             RemoteIPHeader X-Real-IP
             SetEnvIf X-Forwarded-SSL on HTTPS=on
