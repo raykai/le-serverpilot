@@ -13,14 +13,14 @@ SH script to install / manage Lets Encrypt for Server Pilot free users
 
 ```
 git clone https://github.com/dfinnema/le-serverpilot.git
-cd le-df
+cd le-serverpilot
 chmod +x df.sh
 ```
 
 ##How to Use
 
 ```
-cd le-df
+cd le-serverpilot
 ./df.sh
 ```
 
