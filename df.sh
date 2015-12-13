@@ -43,6 +43,7 @@ until [ "$selection" = "0" ]; do
     echo "  9) Deactivate SSL"
     echo ""
     echo "  q) Quit"
+    echo "  u) Remove le-serverpilot and Lets Encrypt"
     echo ""
     echo -n "Enter selection: "
     read selection
@@ -58,6 +59,7 @@ until [ "$selection" = "0" ]; do
         7 ) bash config-lets.sh; press_enter ;;
         8 ) bash sp-https.sh; press_enter ;;
         9 ) bash sp-no-https.sh; press_enter ;;
+        u ) bash del.sh ;;
         q ) exit ;;
         0 ) exit ;;
         * ) echo "Please choose an option"; press_enter
