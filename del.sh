@@ -15,7 +15,7 @@ echo -e "${NC}"
 
 
 
-echo "Would you like to {$RED}REMOVE${NC} Lets Encrypt? (y/n)?"
+echo -e "Would you like to {$RED}REMOVE${NC} Lets Encrypt? (y/n)?"
 echo -e "${RED}** This will also delete your account key"
 echo -e "this cannot be undone!${NC}"
 read DFRUN
@@ -30,7 +30,7 @@ else
 	echo -e "${GREEN}Did not DELETE Lets Encrypt${NC}"
 fi
 
-echo "Would you like to {$RED}REMOVE${NC} le-serverpilot? (y/n)?"
+echo -e "Would you like to {$RED}REMOVE${NC} le-serverpilot? (y/n)?"
 echo -e "${RED}this cannot be undone!${NC}"
 read DFRUN2
 if [ $DFRUN2 == "y" ]; then
