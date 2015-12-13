@@ -14,7 +14,8 @@ GREEN='\033[0;32m'
     echo ""
     
     # Check if the Lets Encrypt config file is there    
-    cd /letsencrypt
+    cd
+    cd letsencrypt
     if [ ! -f cli.ini ]; then
     echo -e "${RED}No Lets Encrypt Config File Found${NC}"
     echo "Use the option 'Setup the config file' to create one"
@@ -50,7 +51,8 @@ GREEN='\033[0;32m'
                         exit;
                     else
                         echo "RUNNING SSL STUFF..."
-                        cd /letsencrypt
+                        cd
+                        cd letsencrypt
                         bash letsencrypt-auto -c cli.ini certonly --webroot-path=/srv/users/serverpilot/apps/$MYAPP/public/ --agree-tos -d $MYDOMAIN
                         echo "DONE!"
                         

@@ -18,7 +18,8 @@ read DFRUN
 if [ $DFRUN == "y" ]; then
     
 	echo -e "${GREEN}Updating le-serverpilot...${NC}"
-    cd /le-serverpilot
+    cd
+    cd le-serverpilot
     git pull
 
 else
@@ -30,7 +31,8 @@ read DFRUN
 if [ $DFRUN == "y" ]; then
     
 	echo -e "${GREEN}Updating Lets Encrypt...${NC}"
-    cd /letsencrypt
+    cd
+    cd letsencrypt
     git pull
 
 else

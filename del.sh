@@ -15,7 +15,7 @@ echo -e "${NC}"
 
 
 
-echo -e "Would you like to {$RED}REMOVE${NC} Lets Encrypt? (y/n)?"
+echo -e "Would you like to ${RED}REMOVE${NC} Lets Encrypt? (y/n)?"
 echo -e "${RED}** This will also delete your account key"
 echo -e "this cannot be undone!${NC}"
 read DFRUN
@@ -23,7 +23,7 @@ if [ $DFRUN == "y" ]; then
     
 	echo -e "Removing Lets Encrypt..."
     cd 
-    rm -rf /letsencrypt
+    rm -rf letsencrypt
     echo "DONE!"
 
 else
@@ -37,7 +37,7 @@ if [ $DFRUN2 == "y" ]; then
     
 	echo -e "Removing le-serverpilot..."
     cd 
-    rm -rf /le-serverpilot
+    rm -rf le-serverpilot
     echo "DONE!"
 
 else
