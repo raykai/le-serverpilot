@@ -23,7 +23,7 @@ if [ $DFRUN == "y" ]; then
     
 	echo -e "Removing Lets Encrypt..."
     cd 
-    rm -rf letsencrypt
+    rm -rf /letsencrypt
     echo "DONE!"
 
 else
@@ -37,7 +37,7 @@ if [ $DFRUN2 == "y" ]; then
     
 	echo -e "Removing le-serverpilot..."
     cd 
-    rm -rf le-serverpilot
+    rm -rf /le-serverpilot
     echo "DONE!"
 
 else

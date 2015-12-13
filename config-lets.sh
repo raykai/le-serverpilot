@@ -29,7 +29,7 @@ GREEN='\033[0;32m'
                exit 1
             else
                         echo "RUNNING CONFIG STUFF..."
-                        cd letsencrypt
+                        cd /letsencrypt
                         echo "
                         rsa-key-size = 4096
                         server = https://acme-v01.api.letsencrypt.org/directory

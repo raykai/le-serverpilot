@@ -14,7 +14,7 @@ GREEN='\033[0;32m'
     echo ""
     
     # Check if the Lets Encrypt config file is there    
-    cd letsencrypt
+    cd /letsencrypt
     if [ ! -f cli.ini ]; then
     echo -e "${RED}No Lets Encrypt Config File Found${NC}"
     echo "Use the option 'Setup the config file' to create one"
@@ -51,7 +51,7 @@ GREEN='\033[0;32m'
                     else
                         echo "RUNNING SSL STUFF..."
                         cd
-                        cd letsencrypt
+                        cd /letsencrypt
                         bash letsencrypt-auto -c cli.ini --renew certonly --webroot-path=/srv/users/serverpilot/apps/${MYAPP}/public/ -d ${MYDOMAIN} --agree-tos 
                         echo -e "Do you want to ${RED}RESTART${NC} nginx service (y/n)?"
                         read DFRUNR
