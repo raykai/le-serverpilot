@@ -13,6 +13,16 @@ GREEN='\033[0;32m'
     echo -e " ###############################################################" 
     echo ""
     
+    # Check if the Lets Encrypt config file is there    
+    cd letsencrypt
+    if [ ! -f cli.ini ]; then
+    echo -e "${RED}No Lets Encrypt Config File Found${NC}"
+    echo "Use the option 'Setup the config file' to create one"
+    exit;
+    else
+    cd
+    fi
+    
     echo -e "Do you want to ${GREEN}RENEW${NC} a SSL certificate (y/n)?"
     read DFRUN
     if [ $DFRUN == "y" ]; then
