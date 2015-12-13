@@ -6,7 +6,7 @@ GREEN='\033[0;32m'
 
 #==
 
-echo -e "${RED}"
+echo -e "${GREEN}"
 echo -e ""
 echo -e " ###############################################################" 
 echo -e " ##   THIS WILL ADD HTTPS TO A CUSTOM VHOST FOR SERVERPILOT   ##"
