@@ -26,3 +26,15 @@ if [ $DFRUN == "y" ]; then
 else
 	echo -e "${GREEN}Did not update Lets Encrypt${NC}"
 fi
+
+echo "Do you want to update LE-SERVERPILOT from the GIT (y/n)?"
+read DFRUN
+if [ $DFRUN == "y" ]; then
+    
+	echo -e "${GREEN}Updating le-serverpilot...${NC}"
+    cd le-serverpilot
+    git pull
+
+else
+	echo -e "${GREEN}Did not update le-serverpilot${NC}"
+fi
