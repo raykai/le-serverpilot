@@ -21,7 +21,7 @@ until [ "$selection" = "0" ]; do
     echo -e " ###############################################################" 
     echo -e " ##   THIS SCRIPT WILL MANAGE LETS ENCRYPT FOR SERVERPILOT    ##"
     echo -e " ##                                                           ##"
-    echo -e " ##                ${NC}** USE AT YOUR OWN RISK **${GREEN}                    ##"
+    echo -e " ##                ${NC}** USE AT YOUR OWN RISK **${GREEN}                 ##"
     echo -e " ##                                                           ##"
     echo -e " ##                     Version: alpha 1.3                    ##"
     echo -e " ###############################################################" 
