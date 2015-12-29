@@ -15,26 +15,27 @@ GREEN='\033[0;32m'
     
     # Run   
     
-    echo -e "Do you want to issue a ${RED}NEW${NC} SSL certificate (y/n)?"
+    echo -e "${GREEN}Do you want to issue/renew a SSL certificate (y/n)?${NC}"
+    echo " existing certificates are renewed if older than 14 days"
     read DFRUN
     if [ $DFRUN == "y" ]; then
         
-        echo "What is your email address you want to use for Lets Encrypt"
+        echo -e "${GREEN}What is your email address you want to use for Lets Encrypt${NC}"
         read MYEMAIL
                 
         # Check if string is empty using -z. For more 'help test'    
         if [[ -z "$MYEMAIL" ]]; then
-            echo -e "${RED}NO EMAIL ENTERED${NC}"
+            echo -e "${RED} ERROR: NO EMAIL ENTERED${NC}"
             exit 1
         fi
     
     
-        echo "What is your current app name?"
+        echo -e "${GREEN}What is your current app name?${NC}"
         read MYAPP
                 
             # Check if string is empty using -z. For more 'help test'    
             if [[ -z "$MYAPP" ]]; then
-               echo -e "${RED}NO APP ENTERED${NC}"
+               echo -e "${RED} ERROR: NO APP ENTERED${NC}"
                exit 1
             else
                  #Parse Dir structure for APP
@@ -43,20 +44,20 @@ GREEN='\033[0;32m'
                  # Lets check if the app exists
                 if [ ! -d "$MYAPP_DIR" ]; then
                 #if [  -d "$MYAPP_DIR" ]; then
-                    echo -e "${RED}APP NOT FOUND${NC} - Check your spelling and try again";
+                    echo -e "${RED} ERROR: APP NOT FOUND${NC} - Check your spelling and try again";
                     exit;
                 else
-                    echo "Which domain name do wish to use for this cert?"
+                    echo -e "${GREEN}Which domain name do wish to use for this cert?${NC}"
                     read MYDOMAIN
                     
                     if [[ -z "$MYDOMAIN" ]]; then
-                        echo -e "${RED}NO DOMAIN ENTERED${NC}";
+                        echo -e "${RED} ERROR: No Domain Entered${NC}";
                         exit;
                     else
                         # Check if the Domain Exists
                          if [[ $(wget http://${MYDOMAIN}/ -O-) ]] 2>/dev/null
                           then echo " + Domain Valid"
-                          else echo "ERROR: Invalid Domain";
+                          else echo -e "${RED} ERROR: Invalid Domain${NC}";
                           exit;
                          fi
                     

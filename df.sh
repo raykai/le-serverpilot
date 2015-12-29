@@ -32,6 +32,7 @@ until [ "$selection" = "0" ]; do
     echo "Lets Encrypt Options"
     echo "  1) Issue / Renew a CERT" 
     echo "  2) Revoke a CERT" 
+    echo "  3) Delete Lets Encrypt Account Key"
     echo ""    
     echo "Server Pilot Options"
     echo "  8) Activate SSL (issue a cert first)"
@@ -39,7 +40,6 @@ until [ "$selection" = "0" ]; do
     echo ""
     echo "Misc"
     echo "  u) Update le-serverpilot"
-    echo "  d) Delete le-serverpilot"
     echo ""
     echo "  q) Quit"
     echo ""
@@ -50,10 +50,10 @@ until [ "$selection" = "0" ]; do
         1 ) bash issue-cert.sh; press_enter ;;
         #2 ) bash revoke-cert.sh; press_enter ;;
         2 ) echo "Coming Soon"; press_enter ;;
+        3 ) bash le-account.sh; press_enter ;;
         8 ) bash sp-https.sh; press_enter ;;
         9 ) bash sp-no-https.sh; press_enter ;;
         u ) bash le-update.sh; press_enter ;;
-        d ) bash del.sh ;;
         q ) exit ;;
         0 ) exit ;;
         * ) echo "Please choose an option"; press_enter

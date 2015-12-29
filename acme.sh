@@ -4,6 +4,8 @@
 # A Few Changes for SERVERPILOT FREE USERS
 # Saves us having to use the Lets Encrypt Client
 
+NC='\033[0m' # No Color    
+GREEN='\033[0;32m'
 
 set -e
 set -u
@@ -19,9 +21,9 @@ BASEDIR="${SCRIPTDIR}"
 # Default config values
 
     # SET LE for testing only
-    CA="https://acme-staging.api.letsencrypt.org/directory"
+    #CA="https://acme-staging.api.letsencrypt.org/directory"
     
-#CA="https://acme-v01.api.letsencrypt.org/directory"
+CA="https://acme-v01.api.letsencrypt.org/directory"
 LICENSE="https://letsencrypt.org/documents/LE-SA-v1.0.1-July-27-2015.pdf"
 HOOK=
 RENEW_DAYS="14"
@@ -61,7 +63,7 @@ init_system() {
     #sleep 2
   elif [[ -e "${CONFIG}" ]]; then
     if [[ ! "${COMMAND}" = "env" ]]; then
-      echo "Using config file ${CONFIG}"
+      echo " + Using config file ${CONFIG}"
     fi
     BASEDIR="$(dirname "${CONFIG}")"
     # shellcheck disable=SC1090
@@ -116,14 +118,14 @@ init_system() {
   CA_NEW_REG="$(printf "%s" "${CA_DIRECTORY}" | get_json_string_value new-reg)" &&
   # shellcheck disable=SC2015
   CA_REVOKE_CERT="$(printf "%s" "${CA_DIRECTORY}" | get_json_string_value revoke-cert)" ||
-  (echo "Error retrieving ACME/CA-URLs, check if your configured CA points to the directory entrypoint." >&2; exit 1)
+  (echo "ERROR retrieving ACME/CA-URLs, check if your configured CA points to the directory entrypoint." >&2; exit 1)
 
 
   # check private key ...
   register="0"
   if [[ -n "${PARAM_PRIVATE_KEY:-}" ]]; then
     # a private key was specified from the command line so use it for this run
-    echo "Using private key ${PARAM_PRIVATE_KEY} instead of account key"
+    echo " + Using private key ${PARAM_PRIVATE_KEY} instead of account key"
     PRIVATE_KEY="${PARAM_PRIVATE_KEY}"
     if ! openssl rsa -in "${PRIVATE_KEY}" -check 2>/dev/null > /dev/null; then
       echo " + ERROR: private key is not valid, can not continue" >&2
@@ -132,7 +134,7 @@ init_system() {
   else
     # Check if private account key exists, if it doesn't exist yet generate a new one (rsa key)
     if [[ ! -e "${PRIVATE_KEY}" ]]; then
-      echo "+ Generating account key..."
+      echo " + Generating account key..."
       _openssl genrsa -out "${PRIVATE_KEY}" "${KEYSIZE}"
       register="1"
     fi
@@ -150,9 +152,9 @@ init_system() {
 
   # If we generated a new private key in the step above we have to register it with the acme-server
   if [[ "${register}" = "1" ]]; then
-    echo "+ Registering account key with letsencrypt..."
+    echo " + Registering account key with letsencrypt..."
     if [ -z "${CA_NEW_REG}" ]; then
-      echo " + ERROR: Certificate authority doesn't allow registrations." >&2
+      echo " ERROR: Certificate authority doesn't allow registrations." >&2
       exit 1
     fi
     # if an email for the contact has been provided then adding it to the registration request
@@ -166,7 +168,7 @@ init_system() {
   if [[ -e "${BASEDIR}/domains.txt" ]]; then
     DOMAINS_TXT="${BASEDIR}/domains.txt"
   else
-    echo " + ERROR: domains.txt not found" >&2
+    echo " ERROR: domains.txt not found" >&2
     exit 1
   fi
 }
@@ -223,9 +225,9 @@ _request() {
   fi
 
   if [[ ! "${statuscode:0:1}" = "2" ]]; then
-    echo "  + ERROR: An error occurred while sending ${1}-request to ${2} (Status ${statuscode})" >&2
+    echo "  ERROR: An error occurred while sending ${1}-request to ${2} (Status ${statuscode})" >&2
     echo >&2
-    echo "Details:" >&2
+    echo " + Details:" >&2
     echo "$(<"${tempcont}"))" >&2
     rm -f "${tempcont}"
 
@@ -254,9 +256,9 @@ _openssl() {
   res=$?
   set -e
   if [[ $res -ne 0 ]]; then
-    echo "  + ERROR: failed to run $* (Exitcode: $res)" >&2
+    echo "  ERROR: failed to run $* (Exitcode: $res)" >&2
     echo >&2
-    echo "Details:" >&2
+    echo " Details:" >&2
     echo "$out" >&2
     exit $res
   fi
@@ -290,20 +292,20 @@ sign_domain() {
   altnames="${*}"
   
   if [[ ! -e "${WELLKNOWN}" ]]; then
-    echo " + ERROR: WELLKNOWN directory doesn't exist, please create ${WELLKNOWN} and set appropriate permissions." >&2
+    echo " ERROR: WELLKNOWN directory doesn't exist, please create ${WELLKNOWN} and set appropriate permissions." >&2
     exit 1
   fi
 
   echo " + Signing domains..."
   if [[ -z "${CA_NEW_AUTHZ}" ]] || [[ -z "${CA_NEW_CERT}" ]]; then
-    echo " + ERROR: Certificate authority doesn't allow certificate signing" >&2
+    echo " ERROR: Certificate authority doesn't allow certificate signing" >&2
     exit 1
   fi
   timestamp="$(date +%s)"
 
   # If there is no existing certificate directory => make it
   if [[ ! -e "${BASEDIR}/certs/${domain}" ]]; then
-    echo " + make directory ${BASEDIR}/certs/${domain} ..."
+    echo " + Creating directory ${BASEDIR}/certs/${domain} ..."
     mkdir -p "${BASEDIR}/certs/${domain}"
   fi
 
@@ -318,7 +320,7 @@ sign_domain() {
   # Generate signing request config and the actual signing request
   SAN=""
   for altname in $altnames; do
-    SAN+="DNS:${altname}, "
+    SAN+=" DNS:${altname}, "
   done
   SAN="${SAN%%, }"
   echo " + Generating signing request..."
@@ -337,7 +339,7 @@ sign_domain() {
     challenge_uri="$(printf '%s' "${challenge}" | get_json_string_value uri)"
 
     if [[ -z "${challenge_token}" ]] || [[ -z "${challenge_uri}" ]]; then
-      echo "  + Error: Can't retrieve challenges (${response})" >&2
+      echo "  Error: Can't retrieve challenges (${response})" >&2
       exit 1
     fi
 
@@ -375,7 +377,7 @@ sign_domain() {
     if [[ "${status}" = "valid" ]]; then
       echo " + Challenge is valid!"
     else
-      echo " + Challenge is invalid! (returned: ${status})" >&2
+      echo " ERROR Challenge is invalid! (returned: ${status})" >&2
       exit 1
     fi
 
@@ -416,7 +418,7 @@ sign_domain() {
   fi
 
   unset challenge_token
-  echo " + Done!"
+  echo -e " + ${GREEN}Done!${NC}"
 }
 
 
@@ -432,7 +434,7 @@ command_sign_domains() {
   fi
       
   if [[ ! -e "${WELLKNOWN}" ]]; then
-    echo " + ERROR: WELLKNOWN directory doesn't exist, please create ${WELLKNOWN} and set appropriate permissions." >&2
+    echo " ERROR: WELLKNOWN directory doesn't exist, please create ${WELLKNOWN} and set appropriate permissions." >&2
     exit 1
   fi
   
@@ -445,9 +447,9 @@ command_sign_domains() {
     force_renew="${PARAM_FORCE:-no}"
 
     if [[ -z "${morenames}" ]];then
-      echo "Processing ${domain}"
+      echo " + Processing ${domain}"
     else
-      echo "Processing ${domain} with SAN: ${morenames}"
+      echo " + Processing ${domain} with SAN: ${morenames}"
     fi
 
     if [[ -e "${cert}" ]]; then
