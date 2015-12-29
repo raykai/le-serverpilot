@@ -1,2 +1,7 @@
 .DS_Store
-
+private_key.pem
+config.sh
+domains.txt
+ssl-pro-nginx.sh
+ssl-pro-apache.sh
+certs/

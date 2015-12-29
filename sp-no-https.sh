@@ -17,7 +17,7 @@ echo -e "${NC}"
 
 
 echo "Do you want to remove the custom conf file for HTTPS (y/n)?"
-echo " ** this cannot be undone **"
+echo -e "${RED} ** this cannot be undone **${NC}"
 read DFRUN
 if [ $DFRUN == "y" ]; then
 	echo "What is your current app name?"
