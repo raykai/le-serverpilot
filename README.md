@@ -33,15 +33,19 @@ It uses the Shell script from (https://github.com/lukas2511/letsencrypt.sh) to d
 ### FAQ
 
 Q: Does this need to be run as ROOT
+
 A: Yes at this time it requires ROOT or SUDO access as it needs to edit APACHE and NGINX configurations
 
 Q: Where does it store the SSL files 
+
 A: in a sub directory called 'certs' (eg; le-serverpilot/certs/)
 
 Q: Where does it store my Lets Encrypt account 
+
 A: in the le-serverpilot directory under a file called 'private_key.pem' 
 
 Q: Does this use the official Lets Encrypt client
+
 A: No it uses a very usefull script from (https://github.com/lukas2511/letsencrypt.sh) to do the heavy lifting
 
 
