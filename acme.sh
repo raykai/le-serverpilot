@@ -291,10 +291,18 @@ sign_domain() {
   domain="${1}"
   altnames="${*}"
   
+  # Create well-known dir if it doesnt exist
   if [[ ! -e "${WELLKNOWN}" ]]; then
-    echo " ERROR: WELLKNOWN directory doesn't exist, please create ${WELLKNOWN} and set appropriate permissions." >&2
-    exit 1
+    echo " - WELLKNOWN dir not found"
+    mkdir -p $WELLKNOWN
+    if [[ -e "${WELLKNOWN}" ]]; then
+        echo " + WELLKNOWN DIR Created..."
+    else
+        echo " ERROR: WELLKNOWN directory cannot be created, please creat it manually (${WELLKNOWN}) and set appropriate permissions." >&2
+        exit 1
+    fi
   fi
+
 
   echo " + Signing domains..."
   if [[ -z "${CA_NEW_AUTHZ}" ]] || [[ -z "${CA_NEW_CERT}" ]]; then
