@@ -21,9 +21,9 @@ BASEDIR="${SCRIPTDIR}"
 # Default config values
 
     # SET LE for testing only
-    CA="https://acme-staging.api.letsencrypt.org/directory"
+    #CA="https://acme-staging.api.letsencrypt.org/directory"
     
-#CA="https://acme-v01.api.letsencrypt.org/directory"
+CA="https://acme-v01.api.letsencrypt.org/directory"
 LICENSE="https://letsencrypt.org/documents/LE-SA-v1.0.1-July-27-2015.pdf"
 HOOK=
 RENEW_DAYS="14"
