@@ -63,6 +63,7 @@ GREEN='\033[0;32m'
                     
                         # Create TMP CONFIG FILE
                         echo -e "WELLKNOWN='/srv/users/serverpilot/apps/${MYAPP}/public/.well-known/acme-challenge'" > config.sh
+                        echo -e "WELLKNOWN2='/srv/users/serverpilot/apps/${MYAPP}/public/.well-known'" >> config.sh
                         echo -e "CONTACT_EMAIL='${MYEMAIL}'" >> config.sh
                         # Create Domain text
                         echo -e "${MYDOMAIN}" > domains.txt

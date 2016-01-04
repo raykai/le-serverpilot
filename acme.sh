@@ -21,15 +21,16 @@ BASEDIR="${SCRIPTDIR}"
 # Default config values
 
     # SET LE for testing only
-    #CA="https://acme-staging.api.letsencrypt.org/directory"
+    CA="https://acme-staging.api.letsencrypt.org/directory"
     
-CA="https://acme-v01.api.letsencrypt.org/directory"
+#CA="https://acme-v01.api.letsencrypt.org/directory"
 LICENSE="https://letsencrypt.org/documents/LE-SA-v1.0.1-July-27-2015.pdf"
 HOOK=
 RENEW_DAYS="14"
 PRIVATE_KEY=
 KEYSIZE="4096"
 WELLKNOWN=
+WELLKNOWN2=
 PRIVATE_KEY_RENEW="no"
 OPENSSL_CNF="$(openssl version -d | cut -d'"' -f2)/openssl.cnf"
 CONTACT_EMAIL=
@@ -291,18 +292,23 @@ sign_domain() {
   domain="${1}"
   altnames="${*}"
   
-  # Create well-known dir if it doesnt exist
+   # Create well-known dir if it doesnt exist
   if [[ ! -e "${WELLKNOWN}" ]]; then
-    echo " - WELLKNOWN dir not found"
+    echo " - Challenge directory not found"
     mkdir -p $WELLKNOWN
     if [[ -e "${WELLKNOWN}" ]]; then
-        echo " + WELLKNOWN DIR Created..."
+        echo " + Challenge directory created..."
+        #echo "    - CHMOD 777 (${WELLKNOWN})"
+        chmod 777 $WELLKNOWN
+        #echo "    - CHMOD 777 (${WELLKNOWN2})"
+        chmod 777 $WELLKNOWN2
     else
-        echo " ERROR: WELLKNOWN directory cannot be created, please creat it manually (${WELLKNOWN}) and set appropriate permissions." >&2
+        echo " ERROR: Challenge directory cannot be created, please creat it manually (${WELLKNOWN}) and set appropriate permissions." >&2
         exit 1
     fi
+  else
+    echo " + Challenge directory found"
   fi
-
 
   echo " + Signing domains..."
   if [[ -z "${CA_NEW_AUTHZ}" ]] || [[ -z "${CA_NEW_CERT}" ]]; then
@@ -440,12 +446,25 @@ command_sign_domains() {
     DOMAINS_TXT="$(mktemp)"
     echo "${PARAM_DOMAIN}" > "${DOMAINS_TXT}"
   fi
-      
+        
+  # Create well-known dir if it doesnt exist
   if [[ ! -e "${WELLKNOWN}" ]]; then
-    echo " ERROR: WELLKNOWN directory doesn't exist, please create ${WELLKNOWN} and set appropriate permissions." >&2
-    exit 1
+    echo " - Challenge directory not found"
+    mkdir -p $WELLKNOWN
+    if [[ -e "${WELLKNOWN}" ]]; then
+        echo " + Challenge directory created..."
+        #echo "    - CHMOD 777 (${WELLKNOWN})"
+        chmod 777 $WELLKNOWN
+        #echo "    - CHMOD 777 (${WELLKNOWN2})"
+        chmod 777 $WELLKNOWN2
+    else
+        echo " ERROR: Challenge directory cannot be created, please creat it manually (${WELLKNOWN}) and set appropriate permissions." >&2
+        exit 1
+    fi
+  else
+    echo " + Challenge directory found"
   fi
-  
+    
   # Generate certificates for all domains found in domains.txt. Check if existing certificate are about to expire
   <"${DOMAINS_TXT}" sed 's/^[[:space:]]*//g;s/[[:space:]]*$//g' | grep -vE '^(#|$)' | while read -r line; do
     domain="$(printf '%s\n' "${line}" | cut -d' ' -f1)"
