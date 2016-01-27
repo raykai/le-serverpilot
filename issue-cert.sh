@@ -1,85 +1,144 @@
 #!/bin/bash
 
-# Lets Encrypt sh
-RED='\033[0;31m'
-NC='\033[0m' # No Color    
-GREEN='\033[0;32m'
-
-
-    echo -e ""
-    echo -e " ###############################################################" 
-    echo -e " ##      THIS WILL ISSUE A FREE 90 DAY SSL CERTIFICATE        ##"
-    echo -e " ##                     FROM LETS ENCRYPT                     ##"
-    echo -e " ###############################################################" 
-    echo ""
+echo -e ""
+echo -e " ###############################################################" 
+echo -e " ##      THIS WILL ISSUE A FREE 90 DAY SSL CERTIFICATE        ##"
+echo -e " ##                     FROM LETS ENCRYPT                     ##"
+echo -e " ###############################################################" 
+echo ""
+            
+            # In Testing mode use only testing accounts
+            if [[ "${TESTING}" == 1 ]]; then DF_TMP_ACCD=${DF_ACCOUNT_DIR_T}; else DF_TMP_ACCD=${DF_ACCOUNT_DIR}; fi
+            
+            # Check if there is a default email account configured
+            if [ ! -f "${DF_TMP_ACCD}/${DF_ACCOUNT_D}" ]; then
+                echo -e " ${RED}WARNING:${NC} No default email account configured"
+                echo "  - please use the account menu to set one up"
+                exit 1;
+            fi
+            
+            # Load the Account 
+            . "${DF_TMP_ACCD}/${DF_ACCOUNT_D}"      
     
     # Run   
     
-    echo -e "${GREEN}Do you want to issue/renew a SSL certificate (y/n)?${NC}"
-    echo " existing certificates are renewed if older than 14 days"
+    echo -e "${GREEN}Do you want to ISSUE a SSL certificate (y/n)?${NC}"
+    echo " > existing certificates are renewed if older than 14 days"
     read DFRUN
-    if [ $DFRUN == "y" ]; then
+    echo ""
+    if [ "${DFRUN}" == "y" ]; then 
+    
+            echo -e "Which domain(s) do you wish to issue a certificate for?"
+            echo " > eg; mydomain.com"
+            echo " > For more than one SSL cert per IP,"
+            echo "   please use spaces in between for any SNI domains"
+            echo " > eg; mydomain.com myseconddomain.com someothergreatdomain.com"
+            echo ""
+            echo " > NOTE: you must have these domains in your different vhosts"
+            echo "         for validation otherwise the challenge will fail"
+            echo ""
+            read DFRUNCERT
+            echo ""
+            
+            if [ "${DFRUNCERT}" == "" ]; then echo -e "${RED}ERROR:${NC} Please enter a domain"; exit 1; fi
+            # Check if we already have an existing domain
+            dftmpstring="$( cut -d ' ' -f 1 <<< "${DFRUNCERT}" )";
+            if [ -d "${BASEDIR}/certs/${dftmpstring}" ]; then 
+                echo -e "${RED}WARNING:${NC} Primary domain already exists!"
+                echo ""
+                echo "Do you wish to continue? (y/n)"
+                read DF_TMP_INPUT2
+                echo ""
+                if [ ! "${DF_TMP_INPUT2}" == "y" ]; then echo " - Nothing issued!"; exit 1; fi
+            fi
+            
+            # create tmp file for the domains
+            echo -e "${DFRUNCERT}" > "${BASEDIR}/tmp-domains.txt";
         
-        echo -e "${GREEN}What is your email address you want to use for Lets Encrypt${NC}"
-        read MYEMAIL
-                
-        # Check if string is empty using -z. For more 'help test'    
-        if [[ -z "$MYEMAIL" ]]; then
-            echo -e "${RED} ERROR: NO EMAIL ENTERED${NC}"
-            exit 1
+        # Check if Challenge directory exists
+        if [ ! -d "$AUTODF" ]; then
+            echo -e " + Creating global auto challenge directory";
+            mkdir -p "$AUTODF";
+        else
+            echo -e " - global auto challange directory exists";
+            # Create a test file (so we can check if the file is readable from the public internet using http)
         fi
-    
-    
-        echo -e "${GREEN}What is your current app name?${NC}"
-        read MYAPP
-                
-            # Check if string is empty using -z. For more 'help test'    
-            if [[ -z "$MYAPP" ]]; then
-               echo -e "${RED} ERROR: NO APP ENTERED${NC}"
-               exit 1
-            else
-                 #Parse Dir structure for APP
-                MYAPP_DIR='/srv/users/serverpilot/apps/'$MYAPP'/public/'
-                
-                 # Lets check if the app exists
-                if [ ! -d "$MYAPP_DIR" ]; then
-                #if [  -d "$MYAPP_DIR" ]; then
-                    echo -e "${RED} ERROR: APP NOT FOUND${NC} - Check your spelling and try again";
-                    exit;
-                else
-                    echo -e "${GREEN}Which domain name do wish to use for this cert?${NC}"
-                    read MYDOMAIN
-                    
-                    if [[ -z "$MYDOMAIN" ]]; then
-                        echo -e "${RED} ERROR: No Domain Entered${NC}";
-                        exit;
-                    else
-                        # Check if the Domain Exists
-                         if [[ $(wget http://${MYDOMAIN}/ -O-) ]] 2>/dev/null
-                          then echo " + Domain Valid"
-                          else echo -e "${RED} ERROR: Invalid Domain${NC}";
-                          exit;
-                         fi
-                    
-                        # Create TMP CONFIG FILE
-                        echo -e "WELLKNOWN='/srv/users/serverpilot/apps/${MYAPP}/public/.well-known/acme-challenge'" > config.sh
-                        echo -e "WELLKNOWN2='/srv/users/serverpilot/apps/${MYAPP}/public/.well-known'" >> config.sh
-                        echo -e "CONTACT_EMAIL='${MYEMAIL}'" >> config.sh
-                        # Create Domain text
-                        echo -e "${MYDOMAIN}" > domains.txt
-                        bash acme.sh -c -d $MYDOMAIN
-                        
-                        #Remove tmp files
-                        rm domains.txt
-                        rm config.sh
-                    fi
-                    
+        
+        # Add well-known alias to all vhosts on the server
+        SEVHOST="${DF_CL_NGINX}/"
+        # Do we need to restart the NGINX Service?
+        DFSERVICER=0;
+        
+        # Search through the vhosts.d directory for all folders
+        for Dir in $(find ${SEVHOST}* -maxdepth 0 -type d ); 
+        do
+            # Check if the DIR is found (prevents config errors)
+            FolderName=$(basename $Dir);
+            if [[ ! -d "${DF_CL_NGINX}/${FolderName}" ]]; then 
+                echo -e "${RED}ERROR:${NC} Vhost directory NOT found for (${FolderName})"; 
+                echo " - (${DF_CL_NGINX}/${FolderName})"; 
+                exit 1; 
+            fi
+            
+            
+            # Check if we have an existing file? Check if it is correct
+            # if wrong delete it so we can re-create again
+            if [[ -f "${DF_CL_NGINX}/${FolderName}/acme.conf" ]]; then
+                 DF_TMP_RE=1;
+                 if grep -q "${AUTODF}" "${DF_CL_NGINX}/${FolderName}/acme.conf"; then DF_TMP_RE=0; fi
+                 
+                 if [[ ${DF_TMP_RE} == 1 ]]; then
+                    echo " - Found incorrect ACME Challenge Alias for (${FolderName})"; 
+                    sudo rm -f -- "${DF_CL_NGINX}/${FolderName}/acme.conf"
                 fi
             fi
+            
+            # Check if the ACME Conf already exists
+            if [[ ! -f "${DF_CL_NGINX}/${FolderName}/acme.conf" ]]; then
+                echo " + Adding ACME Challenge Alias to (${FolderName})";
+                DFSERVICER=1;
+                # LETS ADD THE CUSTOM WEBROOT ALIAS
+                echo -e "
+# ADDS THE CHALLENGE DIR TO THE VHOST SERVER BLOCK  
+# DO NOT EDIT (generated by sh files)
+location /.well-known/acme-challenge/ {
+       alias ${AUTODF}/;
+}" | sudo tee "${DF_CL_NGINX}/${FolderName}/acme.conf" > /dev/null
+                
+            fi
+        done
         
+        # reset the cd back to script dir
+        cd ${BASEDIR};
+        
+        if [ $DFSERVICER == 1 ]; then
+            # Restart Nginx
+            echo " + Challenge files updated, restarting NGINX..."
+            sudo service nginx-sp restart
+        else
+            echo " + No changes needed in Vhosts"
+        fi
+        
+    
+        # Create the tmp config (for acme.sh) - doing it the lazy way
+        echo -e "WELLKNOWN='${AUTODF}'" > ${CFDFT}
+        echo -e "CONTACT_EMAIL='${CONTACT_EMAIL}'" >> ${CFDFT}
+        echo -e "DOMAINS_TXT='${BASEDIR}/tmp-domains.txt'" >> ${CFDFT}
+        echo -e "PRIVATE_KEY='${PRIVATE_KEY}'" >> ${CFDFT}
+        if [[ "${TESTING}" == 1 ]]; then
+            echo -e 'CA="https://acme-staging.api.letsencrypt.org/directory"' >> ${CFDFT}
+        else
+            echo -e 'CA="https://acme-v01.api.letsencrypt.org/directory"' >> ${CFDFT}
+        fi
+   
+        bash "${BASEDIR}/acme.sh" -c --config ${CFDFT}
+        
+        # Remove tmp config file
+        rm -- ${CFDFT}
+        rm -- "${BASEDIR}/tmp-domains.txt"
     else
-    echo "Nothing issued!"
-	exit;
+        echo "Nothing issued/renewed!"
+	    exit;
     fi
     
     
