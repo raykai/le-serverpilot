@@ -22,18 +22,24 @@ BASEDIR="${SCRIPTDIR}"
 
     # SET LE for testing only
     #CA="https://acme-staging.api.letsencrypt.org/directory"
+        
+    # SET LE for production usage
+    #CA="https://acme-v01.api.letsencrypt.org/directory"
     
-CA="https://acme-v01.api.letsencrypt.org/directory"
+    # Loads the CA from config anyway
+    
+CA=
 LICENSE="https://letsencrypt.org/documents/LE-SA-v1.0.1-July-27-2015.pdf"
 HOOK=
-RENEW_DAYS="14"
+RENEW_DAYS="29"
 PRIVATE_KEY=
 KEYSIZE="4096"
 WELLKNOWN=
-WELLKNOWN2=
+DOMAINS_TXT=
 PRIVATE_KEY_RENEW="no"
 OPENSSL_CNF="$(openssl version -d | cut -d'"' -f2)/openssl.cnf"
 CONTACT_EMAIL=
+DF_ACCOUNT_REG=0
 
 set_defaults() {
   # Default config variables depending on BASEDIR
@@ -138,6 +144,8 @@ init_system() {
       echo " + Generating account key..."
       _openssl genrsa -out "${PRIVATE_KEY}" "${KEYSIZE}"
       register="1"
+    else
+    if [[ ${DF_ACCOUNT_REG} == 1 ]]; then echo " + Account already exists"; fi
     fi
   fi
 
@@ -146,10 +154,6 @@ init_system() {
   pubMod64="$(printf '%s' "$(openssl rsa -in "${PRIVATE_KEY}" -noout -modulus | cut -d'=' -f2)" | hex2bin | urlbase64)"
 
   thumbprint="$(printf '%s' '{"e":"'"${pubExponent64}"'","kty":"RSA","n":"'"${pubMod64}"'"}' | openssl sha -sha256 -binary | urlbase64)"
-
-#DEBUG
-#register="1"
-#echo "DEBUG: REGISTRATION (${register})"
 
   # If we generated a new private key in the step above we have to register it with the acme-server
   if [[ "${register}" = "1" ]]; then
@@ -165,11 +169,11 @@ init_system() {
       signed_request "${CA_NEW_REG}" '{"resource": "new-reg", "agreement": "'"$LICENSE"'"}' > /dev/null
     fi
   fi
+  
+  if [[ ${DF_ACCOUNT_REG} == 1 ]]; then echo " + Finished with the registration"; exit 1; fi
 
-  if [[ -e "${BASEDIR}/domains.txt" ]]; then
-    DOMAINS_TXT="${BASEDIR}/domains.txt"
-  else
-    echo " ERROR: domains.txt not found" >&2
+  if [[ ${DOMAINS_TXT} == "" ]]; then
+    echo -e "${RED}ERROR:${NC} Domains could not be loaded" >&2
     exit 1
   fi
 }
@@ -290,26 +294,36 @@ signed_request() {
 
 sign_domain() {
   domain="${1}"
-  altnames="${*}"
+  altnames="${*}";
+  
+  DFWELLHTTPTMP="df768768.txt";
+
   
    # Create well-known dir if it doesnt exist
   if [[ ! -e "${WELLKNOWN}" ]]; then
-    echo " - Challenge directory not found"
-    mkdir -p $WELLKNOWN
-    if [[ -e "${WELLKNOWN}" ]]; then
-        echo " + Challenge directory created..."
-        #echo "    - CHMOD 777 (${WELLKNOWN})"
-        chmod 777 $WELLKNOWN
-        #echo "    - CHMOD 777 (${WELLKNOWN2})"
-        chmod 777 $WELLKNOWN2
-    else
-        echo " ERROR: Challenge directory cannot be created, please creat it manually (${WELLKNOWN}) and set appropriate permissions." >&2
-        exit 1
-    fi
+    echo " ERROR: Challenge directory cannot be found, please create it manually (${WELLKNOWN}) and set appropriate permissions." >&2
+    exit 1
   else
     echo " + Challenge directory found"
+    
+    # Add a test file to check if we can reach it from the outside world
+    echo -e "its all working!" > "${WELLKNOWN}/${DFWELLHTTPTMP}";
+    chmod a+r "${WELLKNOWN}/${DFWELLHTTPTMP}";
+    
   fi
-
+  
+  # Check if we can reach the well-known dir using http
+  DFWELLHTTP=$(curl --write-out %{http_code} --silent --output /dev/null ${domain}/.well-known/acme-challenge/${DFWELLHTTPTMP})
+  if [[ ${DFWELLHTTP} == "200" ]]; then
+    echo " + Challenge directory reachable by http"
+  else
+    echo " ERROR: Cannot reach the Challenge dir using http (ERROR: ${DFWELLHTTP})" >&2
+    exit 1
+  fi
+  
+  #DEBUG
+  #exit 1;
+    
   echo " + Signing domains..."
   if [[ -z "${CA_NEW_AUTHZ}" ]] || [[ -z "${CA_NEW_CERT}" ]]; then
     echo " ERROR: Certificate authority doesn't allow certificate signing" >&2
@@ -322,6 +336,9 @@ sign_domain() {
     echo " + Creating directory ${BASEDIR}/certs/${domain} ..."
     mkdir -p "${BASEDIR}/certs/${domain}"
   fi
+  
+  # Copy the domain to its new directory (if trows an error of it already existing just ignore it)
+  cp ${DOMAINS_TXT} "${BASEDIR}/certs/${domain}/${DF_ACCOUNT_DOMAIN}" > /dev/null 2>&1 
 
   privkey="privkey.pem"
   # generate a new private key if we need or want one
@@ -432,7 +449,9 @@ sign_domain() {
   fi
 
   unset challenge_token
-  echo -e " + ${GREEN}Done!${NC}"
+  # Running in AUTO mode? Restart NGINX after re-issue
+  if [[ "${DF_AUTO_RUN}" == 1 ]]; then sudo service nginx-sp restart >> $DF_LOG 2>&1; fi
+  echo " + Done!"
 }
 
 
@@ -449,18 +468,8 @@ command_sign_domains() {
         
   # Create well-known dir if it doesnt exist
   if [[ ! -e "${WELLKNOWN}" ]]; then
-    echo " - Challenge directory not found"
-    mkdir -p $WELLKNOWN
-    if [[ -e "${WELLKNOWN}" ]]; then
-        echo " + Challenge directory created..."
-        #echo "    - CHMOD 777 (${WELLKNOWN})"
-        chmod 777 $WELLKNOWN
-        #echo "    - CHMOD 777 (${WELLKNOWN2})"
-        chmod 777 $WELLKNOWN2
-    else
-        echo " ERROR: Challenge directory cannot be created, please creat it manually (${WELLKNOWN}) and set appropriate permissions." >&2
-        exit 1
-    fi
+    echo " ERROR: Challenge directory cannot be found, please create it manually (${WELLKNOWN}) and set appropriate permissions." >&2
+    exit 1
   else
     echo " + Challenge directory found"
   fi
@@ -530,16 +539,16 @@ command_sign_domains() {
 # Description: Revoke specified certificate
 command_revoke() {
   cert="${1}"
-  echo "Revoking ${cert}"
+  echo " + Revoking ${cert}"
   if [ -z "${CA_REVOKE_CERT}" ]; then
-    echo " + ERROR: Certificate authority doesn't allow certificate revocation." >&2
+    echo -e " ${RED}ERROR:${NC} Certificate authority doesn't allow certificate revocation." >&2
     exit 1
   fi
   cert64="$(openssl x509 -in "${cert}" -inform PEM -outform DER | urlbase64)"
   response="$(signed_request "${CA_REVOKE_CERT}" '{"resource": "revoke-cert", "certificate": "'"${cert64}"'"}')"
   # if there is a problem with our revoke request _request (via signed_request) will report this and "exit 1" out
   # so if we are here, it is safe to assume the request was successful
-  echo " + SUCCESS"
+  echo -e " ${GREEN}+ SUCCESS${NC}"
   echo " + renaming certificate to ${cert}-revoked"
   mv -f "${cert}" "${cert}-revoked"
 }

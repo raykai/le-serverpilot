@@ -18,48 +18,54 @@ echo -e "${NC}"
 
 echo "Do you want to remove the custom conf file for HTTPS (y/n)?"
 echo -e "${RED} ** this cannot be undone **${NC}"
+echo ""
 read DFRUN
-if [ $DFRUN == "y" ]; then
+if [[ "${DFRUN}" == "y" ]]; then
 	echo "What is your current app name?"
+    echo ""
 	read MYAPP
     
 # Check whether the app exists
     
-        #Parse Dir structure for APP
-        MYAPP_FILE='/etc/nginx-sp/vhosts.d/'$MYAPP'.custom.conf'
+
                 
         # Lets check if a custom conf exists
-        if [ ! -f ${MYAPP_FILE} ]; then echo -e "${RED}CUSTOM CONFIG NOT FOUND${NC} - Check your spelling and try again"; echo "you may have not setup a custom config yet"; exit; fi
-        
+        MYAPP_FILE="${DF_CL_NGINX}/${MYAPP}.ssl.conf"
+        if [[ ! -f ${MYAPP_FILE} ]]; then 
+            echo -e "${RED}ERROR:${NC} NGINX CUSTOM CONFIG NOT FOUND"; 
+            echo" - Check your spelling and try again"; 
+            echo "   you may have not setup a custom config yet"; 
+            exit 1; 
+        fi
         
         # Remove the custom files
  
         # START WITH NGINX-SP
-        cd /etc/nginx-sp/vhosts.d/
-        # We have to create/overwrite any custom files to ensure no errors popup
-        rm -f $MYAPP.custom.conf
-
-        # NOW LETS DO APACHE
-        cd /etc/apache-sp/vhosts.d/
-        rm -f $MYAPP.custom.conf
+        sudo rm -f -- "${MYAPP_FILE}"
+        echo " + Custom Nginx Conf Removed for (${MYAPP})"
+        
+        # Remove the HTTPS ONLY REDIRECT if it exists
+        if [[ ! -f "${DF_CL_NGINX}/${MYAPP}.d/redirect.nonssl_conf" ]]; then
+            sudo rm -f -- "${DF_CL_NGINX}/${MYAPP}.d/redirect.nonssl_conf"
+            echo " + Removed SSL ONLY Redirect"
+        fi
 
         
             #ALL DONE, Lets restart both services
-            echo -e "Do you want to ${RED}RESTART${NC} nginx and apache services (y/n)?"
-            echo "needed to turn off SSL"
+            echo -e "Do you want to ${RED}RESTART${NC} NGINX service (y/n)?"
+            echo " - this is needed to turn off SSL"
             read DFRUNR
-            if [ $DFRUNR == "y" ]; then
+            if [ "${DFRUNR}" == "y" ]; then
                 sudo service nginx-sp restart
-                sudo service apache-sp restart
-                echo -e "${GREEN}All Done! SSL is now disabled${NC}"
+                echo -e " ${GREEN}+ DONE${NC}"
                 exit;
             else
                 echo "No services restarted, config files have been removed"
-                echo "both your nginx and apache service needs to be restarted in order for the changes to reflected"
+                echo "your nginx service needs to be restarted in order for the changes to reflected"
             fi
 
 fi
 
 else
-	echo -e "${GREEN}Keep SSL? Left the conf files alone${NC}"
+	echo -e "Keep SSL? Left the conf files alone!"
 fi
