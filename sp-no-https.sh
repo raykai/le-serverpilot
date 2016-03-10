@@ -34,7 +34,7 @@ if [[ "${DFRUN}" == "y" ]]; then
         if [[ ! -f ${MYAPP_FILE} ]]; then 
             echo -e "${RED}ERROR:${NC} NGINX CUSTOM CONFIG NOT FOUND"; 
             echo" - Check your spelling and try again"; 
-            echo "   you may have not setup a custom config yet"; 
+            echo "   you may have not setup a ssl config yet"; 
             exit 1; 
         fi
         
@@ -43,6 +43,19 @@ if [[ "${DFRUN}" == "y" ]]; then
         # START WITH NGINX-SP
         sudo rm -f -- "${MYAPP_FILE}"
         echo " + Custom Nginx Conf Removed for (${MYAPP})"
+        
+        # Lets check if a custom conf exists
+        MYAPP_FILE="${DF_CL_APACHE}/${MYAPP}.custom.conf"
+        if [[ ! -f ${MYAPP_FILE} ]]; then 
+            echo -e "${RED}ERROR:${NC} APACHE SSL CONFIG NOT FOUND"; 
+            echo" - Check your spelling and try again"; 
+            echo "   you may have not setup a ssl config yet"; 
+            exit 1; 
+        fi
+        
+        # APACHE-SP
+        sudo rm -f -- "${MYAPP_FILE}"
+        echo " + Custom APACHE Conf Removed for (${MYAPP})"
         
         # Remove the HTTPS ONLY REDIRECT if it exists
         if [[ ! -f "${DF_CL_NGINX}/${MYAPP}.d/redirect.nonssl_conf" ]]; then
@@ -57,11 +70,12 @@ if [[ "${DFRUN}" == "y" ]]; then
             read DFRUNR
             if [ "${DFRUNR}" == "y" ]; then
                 sudo service nginx-sp restart
+                sudo service apache-sp restart
                 echo -e " ${GREEN}+ DONE${NC}"
                 exit;
             else
                 echo "No services restarted, config files have been removed"
-                echo "your nginx service needs to be restarted in order for the changes to reflected"
+                echo "your nginx & apache service needs to be restarted in order for the changes to reflected"
             fi
 
 fi
@@ -69,3 +83,4 @@ fi
 else
 	echo -e "Keep SSL? Left the conf files alone!"
 fi
+

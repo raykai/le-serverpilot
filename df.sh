@@ -117,6 +117,8 @@ if [ ! -z "$1" ]; then
             -F to=''"${DF_MAIL_TO}"'' \
             -F subject='[VITA AI] Domain '"${DF_CRON_DOMAIN}"' SSL' \
             -F text=''"${DF_TMP_EMAIL}"'' > /dev/null 2>&1 
+        else
+        echo -e "${RED}WARNING:${NC} NO LOGS EMAILED, edit 'config' to set this up"
         fi
         
         # Add to main log filename
@@ -124,6 +126,7 @@ if [ ! -z "$1" ]; then
         rm -- ${DF_LOG}
         echo "Finished running Auto Script"
         echo " > see (${DF_LOG_ALL}) for full details"
+        
         exit;
         
     fi

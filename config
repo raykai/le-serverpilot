@@ -1,22 +1,22 @@
 # Are we running on a testing server?
 # if set to 1 it will use the Lets Encrypt staging server
 # if running in testing it will only look for account keys in the staging folder (accounts/staging) 
-TESTING=0
+TESTING=1
 
 # LOG Emailing
 # uses MAILGUN for sending a copy of the running log file for automated renewals
 # if enabled if will use the settings below
-DF_MAIL=1
+DF_MAIL=0
 
 # MAILGUN API
-DF_MAIL_API="key-e65f4aea580299d18a4e00a697a96c19"
+DF_MAIL_API=
 
 # MAILGUN DOMAIN
-DF_MAIL_DOMAIN="tutamen.xyz"
+DF_MAIL_DOMAIN=
 
 # EMAIL FROM
-DF_MAIL_FROM_NAME="Vita AI"
-DF_MAIL_FROM_EMAIL="vita@tutamen.xyz"
+DF_MAIL_FROM_NAME=
+DF_MAIL_FROM_EMAIL=
 
 # EMAIL TO
-DF_MAIL_TO="dev-ssl@tutamen.xyz"
+DF_MAIL_TO=

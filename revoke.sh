@@ -60,7 +60,7 @@
         else
             # More then 1 make the user choose
             echo -e "Which certificate do you wish to revoke?"
-            echo " > eg; cert-1445412480.pem (type 1445412480)"
+            echo -n " > eg; cert-1445412480.pem (type 1445412480) "
             read DFRUNCERT
             echo ""
         fi

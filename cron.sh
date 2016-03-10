@@ -22,7 +22,7 @@
     if [[ "${DF_TMP_INPUT}" == "1" ]]; then
     
         # Check which domain they wish to set a CRON JOB FOR
-        echo "Which PRIMARY domain you wish to setup"
+        echo "Which PRIMARY domain do you wish to setup"
         echo -n " > http://"
         read DF_TMP_CRON_DOMAIN
         echo ""
@@ -31,8 +31,28 @@
         # Check if a folder exists (where the SSL certs are stored)
         if [[ ! -d "${BASEDIR}/certs/${DF_TMP_CRON_DOMAIN}" ]]; then echo -e "${RED}ERROR:${NC} No SSL certs exist under this domain"; exit 1; fi
         # Now lets ask questions about the CRON JOB
-        # 1) Lets ask which email you are using (incase of multiple LE ACCOUNTS) 
-        echo "Which email do you wish to use for this cron job?"
+        
+        # 1) Lets ask which email you are using (incase of multiple LE ACCOUNTS) - lets find all the accounts we have
+        if [ $TESTING == 1 ]; then DF_TMP_ACCD=${DF_ACCOUNT_DIR_T}; else DF_TMP_ACCD=${DF_ACCOUNT_DIR}; fi
+        for AccountFC in $(find ${DF_TMP_ACCD}/*.pem -maxdepth 0 -type f ); 
+            do
+                AccountF=$(basename $AccountFC);
+                    
+                # Display Filename (without ext)
+                DF_TMP_TXT=${DF_TMP_TXT}" > $(basename $AccountF .pem)\n";
+                DFC=$((DFC + 1))
+                DFCO=${AccountF};     
+            done
+               
+        # No Accounts found in saved location or config file
+        if [[ ${DFC} == 0 ]]; then echo -e "${RED}ERROR:${NC} No accounts found"; exit 1; fi
+        DF_TMP_INPUT=
+        DF_TMP_INPUT_MAIL=
+        #Ask which one they wish to use
+        echo "The following accounts were found"
+        echo -e " ${DF_TMP_TXT}";
+        echo ""
+        echo -e "Which one do you wish to use for CRON job?
         echo -n " > "
         read DF_TMP_CRON_EMAIL
         echo ""
@@ -42,6 +62,9 @@
         if [[ "${TESTING}" == 1 ]]; then DF_TMP_ACCD=${DF_ACCOUNT_DIR_T}; else DF_TMP_ACCD=${DF_ACCOUNT_DIR}; fi
         # Check if an account file exists (where the Email accounts are stored)
         if [[ ! -f "${DF_TMP_ACCD}/${DF_TMP_CRON_EMAIL}.pem" ]]; then echo -e "${RED}ERROR:${NC} No email accounts exist under this email"; exit 1; fi
+        
+        # Check if we are emailing the user the cron log file each time it has been run (once a month)
+        if [[ "${DF_MAIL}" == 0 ]]; then echo -e " ${RED}- WARNING:${NC} No email sending configured in the config file"
         
         echo " + Added Domains to cron"
         echo " + Added Email account to cron"
