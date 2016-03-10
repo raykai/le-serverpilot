@@ -13,7 +13,7 @@ SH script to install / manage Lets Encrypt for Server Pilot free users
  * curl installed
  * Root / SUDO User Access
  * Install in a non user home directory (so /etc/ will work fine)
->>>>>>> development
+
 
 ---
 ##How to Install
@@ -33,7 +33,7 @@ git clone -b development https://github.com/dfinnema/le-serverpilot.git
 cd le-serverpilot
 chmod +x df.sh
 ```
->>>>>>> development
+
 ---
 ##How to Use
 
@@ -50,7 +50,7 @@ you can edit the config file to change the testing mode to 0 to not use the stag
 As well as setup Mailgun to email you the result of each CRON job 
 
 ---
->>>>>>> development
+
 ## Misc
 
 Please note this is just a simple set of scripts quickly written. Feel free to fork it.
@@ -66,7 +66,7 @@ It uses mailgun to send it as not all servers have the mail module installed by 
 =======
 By default it does not email anybody unless you edit the config file (copy a sample from config.sample) 
 It uses mailgun (free to use) to send it as not all servers have the mail module installed by default. 
->>>>>>> development
+
 
 ---
 ### FAQ
@@ -75,7 +75,7 @@ It uses mailgun (free to use) to send it as not all servers have the mail module
 Q: Does this need to be run as ROOT / SUDO (it will automaticly attempt to run itself with SUDO)
 =======
 Q: Does this need to be run as ROOT / SUDO (it will automatically attempt to run itself with SUDO)
->>>>>>> development
+
 
 A: Yes at this time it requires ROOT or SUDO access as it needs to edit APACHE and NGINX configurations as well as for CRON jobs
 
@@ -108,7 +108,7 @@ A: If the Certificate is older than 60 days it will renew the cert if run manual
 Geting a Error:
 
 Error: curl: command not found
->>>>>>> development
+
 
 Fix: Make sure that cURL is installed test with sudo curl -V 
 if you get a line saying : -bash: curl: command not found.
