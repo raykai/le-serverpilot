@@ -1,7 +1,9 @@
 .DS_Store
 private_key.pem
-config.sh
+config
+tmp.df
 domains.txt
-ssl-pro-nginx.sh
-ssl-pro-apache.sh
 certs/
+auto-challenge/
+accounts/
+cron.log

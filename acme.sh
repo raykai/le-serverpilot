@@ -31,7 +31,11 @@ BASEDIR="${SCRIPTDIR}"
 CA=
 LICENSE="https://letsencrypt.org/documents/LE-SA-v1.0.1-July-27-2015.pdf"
 HOOK=
+<<<<<<< HEAD
 RENEW_DAYS="29"
+=======
+RENEW_DAYS="60"
+>>>>>>> development
 PRIVATE_KEY=
 KEYSIZE="4096"
 WELLKNOWN=
@@ -40,6 +44,10 @@ PRIVATE_KEY_RENEW="no"
 OPENSSL_CNF="$(openssl version -d | cut -d'"' -f2)/openssl.cnf"
 CONTACT_EMAIL=
 DF_ACCOUNT_REG=0
+<<<<<<< HEAD
+=======
+DFR=0
+>>>>>>> development
 
 set_defaults() {
   # Default config variables depending on BASEDIR
@@ -172,9 +180,17 @@ init_system() {
   
   if [[ ${DF_ACCOUNT_REG} == 1 ]]; then echo " + Finished with the registration"; exit 1; fi
 
+<<<<<<< HEAD
   if [[ ${DOMAINS_TXT} == "" ]]; then
     echo -e "${RED}ERROR:${NC} Domains could not be loaded" >&2
     exit 1
+=======
+  if [[ "${DFR}" == 0 ]]; then 
+      if [[ ${DOMAINS_TXT} == "" ]]; then
+        echo -e "${RED}ERROR:${NC} Domains could not be loaded" >&2
+        exit 1
+      fi
+>>>>>>> development
   fi
 }
 

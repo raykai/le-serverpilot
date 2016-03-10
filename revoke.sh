@@ -60,7 +60,11 @@
         else
             # More then 1 make the user choose
             echo -e "Which certificate do you wish to revoke?"
+<<<<<<< HEAD
             echo " > eg; cert-1445412480.pem (type 1445412480)"
+=======
+            echo -n " > eg; cert-1445412480.pem (type 1445412480) "
+>>>>>>> development
             read DFRUNCERT
             echo ""
         fi
@@ -89,7 +93,11 @@
         
          # Check if the private key exists
         if [ ! -f "${SEVHOST}/privkey-${DFRUNCERT}.pem" ]; then
+<<<<<<< HEAD
             echo -e "${RED}ERROR:${NC} Private Key for certificate not found"
+=======
+            echo -e "${RED}ERROR:${NC} private key for certificate not found"
+>>>>>>> development
             echo "  - Attempted Path (${SEVHOST}/privkey-${DFRUNCERT}.pem)"
             echo "  - Check the number and try again"
             exit 1;
@@ -107,11 +115,19 @@
             
                 # Add Challange directory to tmp config
                 echo -e "PRIVATE_KEY='${SEVHOST}/privkey-${DFRUNCERT}.pem'" > ${CFDFT}
+<<<<<<< HEAD
                 echo -e "CONTACT_EMAIL='${CONTACT_EMAIL}'" >> ${CFDFT}
                 if [[ "${TESTING}" == 1 ]]; then
                     echo -e 'CA="https://acme-staging.api.letsencrypt.org/directory"' >> ${CFDFT}
                 else
                     echo -e 'CA="https://acme-v01.api.letsencrypt.org/directory"' >> ${CFDFT}
+=======
+                echo -e "DFR=1" >> ${CFDFT}
+                if [[ "${TESTING}" == 1 ]]; then
+                    echo -e "CA='https://acme-staging.api.letsencrypt.org/directory'" >> ${CFDFT}
+                else
+                    echo -e "CA='https://acme-v01.api.letsencrypt.org/directory'" >> ${CFDFT}
+>>>>>>> development
                 fi
             
             cd ${BASEDIR}
