@@ -40,6 +40,7 @@ PRIVATE_KEY_RENEW="no"
 OPENSSL_CNF="$(openssl version -d | cut -d'"' -f2)/openssl.cnf"
 CONTACT_EMAIL=
 DF_ACCOUNT_REG=0
+DFR=0
 
 set_defaults() {
   # Default config variables depending on BASEDIR
@@ -172,9 +173,11 @@ init_system() {
   
   if [[ ${DF_ACCOUNT_REG} == 1 ]]; then echo " + Finished with the registration"; exit 1; fi
 
-  if [[ ${DOMAINS_TXT} == "" ]]; then
-    echo -e "${RED}ERROR:${NC} Domains could not be loaded" >&2
-    exit 1
+  if [[ "${DFR}" == 0 ]]; then 
+      if [[ ${DOMAINS_TXT} == "" ]]; then
+        echo -e "${RED}ERROR:${NC} Domains could not be loaded" >&2
+        exit 1
+      fi
   fi
 }
 
