@@ -39,10 +39,10 @@ if [[ "${DFRUN}" == "y" ]]; then
     echo -e " ${RED}WARNING:${NC} you cannot go back to non-ssl on this domain"
     echo ""
     read DFSTSA1
-    echo "Do you want enable SSL only (y/n)?"
-    echo " - only allows access by SSL (auto-redirects 301)"
-    echo ""
-    read DFSSLONLY
+    #echo "Do you want enable SSL only (y/n)?"
+    #echo " - only allows access by SSL (auto-redirects 301)"
+    #echo ""
+    #read DFSSLONLY
    
    # Check if the APP EXISTS
     if [[ ! -d "${DF_CL_NGINX}/${MYAPP}.d" ]]; then
@@ -85,9 +85,10 @@ if [[ "${DFRUN}" == "y" ]]; then
             STS="add_header Strict-Transport-Security max-age=15768000;"
         fi
         
+        # Disabled for now as it is still a bit buggy with the way serverpilot uses a reverse proxy with apache
         if [[ "${DFSSLONLY}" == "y" ]]; then
             echo " + Adding SSL ONLY Redirect"
-            echo -e ="
+            echo -e "
             # Add a HHTPS ONLY REDIRECT
             location / 
             {
@@ -110,7 +111,6 @@ if [[ "${DFRUN}" == "y" ]]; then
 
 # EXTRA SECURITY HEADERS
 add_header X-Content-Type-Options nosniff;
-add_header X-XSS-Protection \"1; mode=block;\";
 $TMP_HEADERADD
 
 server 
