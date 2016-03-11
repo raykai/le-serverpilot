@@ -7,10 +7,8 @@ SH script to install / manage Lets Encrypt for Server Pilot free users
 
  * Ubuntu 14.04 
  * Server running with Serverpilot
-
  * Root / SUDO User Access
  * curl installed
- * Root / SUDO User Access
  * Install in a non user home directory (so /etc/ will work fine)
 
 
@@ -41,7 +39,7 @@ cd /etc/le-serverpilot
 ```
 ---
 
-=======
+
 ## Config File
 
 you can edit the config file to change the testing mode to 0 to not use the staging server at Lets Encrypt
@@ -52,7 +50,6 @@ As well as setup Mailgun to email you the result of each CRON job
 ## Misc
 
 Please note this is just a simple set of scripts quickly written. Feel free to fork it.
-
 It uses the Shell script from (https://github.com/lukas2511/letsencrypt.sh) to do all the Lets Encrypt stuff (acme.sh). 
 
 ---
