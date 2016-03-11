@@ -34,11 +34,7 @@ if [[ "${DFRUN}" == "y" ]]; then
         if [[ ! -f ${MYAPP_FILE} ]]; then 
             echo -e "${RED}ERROR:${NC} NGINX CUSTOM CONFIG NOT FOUND"; 
             echo" - Check your spelling and try again"; 
-<<<<<<< HEAD
-            echo "   you may have not setup a custom config yet"; 
-=======
             echo "   you may have not setup a ssl config yet"; 
->>>>>>> development
             exit 1; 
         fi
         
@@ -48,8 +44,6 @@ if [[ "${DFRUN}" == "y" ]]; then
         sudo rm -f -- "${MYAPP_FILE}"
         echo " + Custom Nginx Conf Removed for (${MYAPP})"
         
-<<<<<<< HEAD
-=======
         # Lets check if a custom conf exists
         MYAPP_FILE="${DF_CL_APACHE}/${MYAPP}.custom.conf"
         if [[ ! -f ${MYAPP_FILE} ]]; then 
@@ -63,7 +57,6 @@ if [[ "${DFRUN}" == "y" ]]; then
         sudo rm -f -- "${MYAPP_FILE}"
         echo " + Custom APACHE Conf Removed for (${MYAPP})"
         
->>>>>>> development
         # Remove the HTTPS ONLY REDIRECT if it exists
         if [[ ! -f "${DF_CL_NGINX}/${MYAPP}.d/redirect.nonssl_conf" ]]; then
             sudo rm -f -- "${DF_CL_NGINX}/${MYAPP}.d/redirect.nonssl_conf"
@@ -77,19 +70,12 @@ if [[ "${DFRUN}" == "y" ]]; then
             read DFRUNR
             if [ "${DFRUNR}" == "y" ]; then
                 sudo service nginx-sp restart
-<<<<<<< HEAD
-=======
                 sudo service apache-sp restart
->>>>>>> development
                 echo -e " ${GREEN}+ DONE${NC}"
                 exit;
             else
                 echo "No services restarted, config files have been removed"
-<<<<<<< HEAD
-                echo "your nginx service needs to be restarted in order for the changes to reflected"
-=======
                 echo "your nginx & apache service needs to be restarted in order for the changes to reflected"
->>>>>>> development
             fi
 
 fi

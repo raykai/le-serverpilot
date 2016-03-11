@@ -46,11 +46,7 @@ echo ""
             if [ -d "${BASEDIR}/certs/${dftmpstring}" ]; then 
                 echo -e "${RED}WARNING:${NC} Primary domain already exists!"
                 echo ""
-<<<<<<< HEAD
-                echo "Do you wish to continue? (y/n)"
-=======
                 echo -n "Do you wish to continue? (y/n) "
->>>>>>> development
                 read DF_TMP_INPUT2
                 echo ""
                 if [ ! "${DF_TMP_INPUT2}" == "y" ]; then echo " - Nothing issued!"; exit 1; fi
@@ -122,13 +118,8 @@ location /.well-known/acme-challenge/ {
         else
             echo " + No changes needed in Vhosts"
         fi
-        
-    
-<<<<<<< HEAD
-        # Create the tmp config (for acme.sh) - doing it the lazy way
-=======
         # Create the tmp config (for acme.sh) - doing it the lazy way -> tmp.df
->>>>>>> development
+
         echo -e "WELLKNOWN='${AUTODF}'" > ${CFDFT}
         echo -e "CONTACT_EMAIL='${CONTACT_EMAIL}'" >> ${CFDFT}
         echo -e "DOMAINS_TXT='${BASEDIR}/tmp-domains.txt'" >> ${CFDFT}

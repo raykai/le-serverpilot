@@ -22,11 +22,8 @@
     if [[ "${DF_TMP_INPUT}" == "1" ]]; then
     
         # Check which domain they wish to set a CRON JOB FOR
-<<<<<<< HEAD
-        echo "Which PRIMARY domain you wish to setup"
-=======
         echo "Which PRIMARY domain do you wish to setup"
->>>>>>> development
+
         echo -n " > http://"
         read DF_TMP_CRON_DOMAIN
         echo ""
@@ -35,10 +32,10 @@
         # Check if a folder exists (where the SSL certs are stored)
         if [[ ! -d "${BASEDIR}/certs/${DF_TMP_CRON_DOMAIN}" ]]; then echo -e "${RED}ERROR:${NC} No SSL certs exist under this domain"; exit 1; fi
         # Now lets ask questions about the CRON JOB
-<<<<<<< HEAD
+
         # 1) Lets ask which email you are using (incase of multiple LE ACCOUNTS) 
         echo "Which email do you wish to use for this cron job?"
-=======
+
         
         # 1) Lets ask which email you are using (incase of multiple LE ACCOUNTS) - lets find all the accounts we have
         if [ $TESTING == 1 ]; then DF_TMP_ACCD=${DF_ACCOUNT_DIR_T}; else DF_TMP_ACCD=${DF_ACCOUNT_DIR}; fi
@@ -61,7 +58,7 @@
         echo -e " ${DF_TMP_TXT}";
         echo ""
         echo -e "Which one do you wish to use for CRON job?
->>>>>>> development
+
         echo -n " > "
         read DF_TMP_CRON_EMAIL
         echo ""
@@ -72,12 +69,12 @@
         # Check if an account file exists (where the Email accounts are stored)
         if [[ ! -f "${DF_TMP_ACCD}/${DF_TMP_CRON_EMAIL}.pem" ]]; then echo -e "${RED}ERROR:${NC} No email accounts exist under this email"; exit 1; fi
         
-<<<<<<< HEAD
-=======
+
+
         # Check if we are emailing the user the cron log file each time it has been run (once a month)
         if [[ "${DF_MAIL}" == 0 ]]; then echo -e " ${RED}- WARNING:${NC} No email sending configured in the config file"
         
->>>>>>> development
+
         echo " + Added Domains to cron"
         echo " + Added Email account to cron"
         
