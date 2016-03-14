@@ -91,7 +91,7 @@ if [ ! -z "$1" ]; then
 
     # EXAMPLE
     # df.sh -c MYDOMAIN
-    # MYDOMAIN = primary domain for the SSL CERT (it will automaticly find SNI domains)
+    # MYDOMAIN = primary domain for the SSL CERT (it will auto find SNI domains)
     
     # A Paramater has been set, lets check what is needed
     if [[ "$1" == "-c" ]]; then
