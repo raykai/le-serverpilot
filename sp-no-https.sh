@@ -77,9 +77,6 @@ if [[ "${DFRUN}" == "y" ]]; then
                 echo "No services restarted, config files have been removed"
                 echo "your nginx & apache service needs to be restarted in order for the changes to reflected"
             fi
-
-fi
-
 else
 	echo -e "Keep SSL? Left the conf files alone!"
 fi

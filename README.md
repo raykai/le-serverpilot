@@ -39,6 +39,15 @@ cd /etc/le-serverpilot
 ```
 ---
 
+---
+
+## Updating your version of le-serverpilot
+
+You can use the command to check for new updates. 
+```
+cd /etc/le-serverpilot
+git pull
+```
 
 ## Config File
 
@@ -58,6 +67,11 @@ It uses the Shell script from (https://github.com/lukas2511/letsencrypt.sh) to d
 By default it does not email anybody unless you edit the config file (copy a sample from config.sample) 
 It uses mailgun (free to use) to send it as not all servers have the mail module installed by default. 
 
+---
+## Mailgun
+
+You can create a free account over at mailgun.com and use the API to edit the config file to enable CRON Job results emails.
+Mailgun has a guide on how to find your API key (https://help.mailgun.com/hc/en-us/articles/203380100-Where-can-I-find-my-API-key-and-SMTP-credentials-)
 
 ---
 ### FAQ
@@ -85,6 +99,10 @@ A: No it uses a very usefull script from (https://github.com/lukas2511/letsencry
 Q: How often will it renew the cert?
 
 A: If the Certificate is older than 60 days it will renew the cert if run manually or through a CRON job
+
+Q: Why not use Postfix
+
+A: Not everybody knows how to setup up a local postfix config, if you have an easy way feel free to use a pull request
 
 ---
 ## Troubleshooting
