@@ -112,7 +112,7 @@ DFC=0;
         fi
         
         # Remove the cron job
-        $(crontab -l ; echo "14 3 3 * * ${BASEDIR}/df.sh -c ${DF_TMP_CRON_DOMAIN} >/dev/null 2>&1") 2>&1 | grep -v 'no crontab' | grep -v df.sh |  sort | uniq | crontab -
+        (crontab -l ; echo "14 3 3 * * ${BASEDIR}/df.sh -c ${DF_TMP_CRON_DOMAIN} >/dev/null 2>&1") 2>&1 | grep -v 'no crontab' | grep -v df.sh |  sort | uniq | crontab -
         
         echo ' + Cron job removed';
         echo "REMOVAL COMPLETED";
