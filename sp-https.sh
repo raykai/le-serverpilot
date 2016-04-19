@@ -32,8 +32,6 @@ if [[ "${DFRUN}" == "y" ]]; then
     echo -e "If you are using SNI please enter the ${GREEN}PRIMARY${NC} domain"
     echo "   if using multiple domains please use the first one"
     echo "   NOT using SNI? You can leave this blank"
-    echo "   NOTE: www.mydomain and mydomain are not the same and need to be"
-    echo "         added seperatly using SNI"
     echo ""
 	read MYDOMAIN_SNI
     echo "Do you want to add 6 Month Policy Strict-Transport-Security (y/n)?"
