@@ -113,6 +113,7 @@
                     echo -e 'CA="https://acme-staging.api.letsencrypt.org/directory"' >> ${CFDFT}
                 else
                     echo -e 'CA="https://acme-v01.api.letsencrypt.org/directory"' >> ${CFDFT}
+                fi
 
                 echo -e "DFR=1" >> ${CFDFT}
                 if [[ "${TESTING}" == 1 ]]; then
