@@ -126,11 +126,11 @@
             bash acme.sh -r "${SEVHOST}/cert-${DFRUNCERT}.pem" --config ${CFDFT}
             
             # Remove tmp config file
-            rm -- ${CFDFT}
+            rm -- ${CFDFT};
         
         else
-        echo "Nothing revoked!"
-        exit;
+            echo "Nothing revoked!"
+            exit;
         fi
         
         
