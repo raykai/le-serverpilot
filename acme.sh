@@ -40,7 +40,6 @@ PRIVATE_KEY_RENEW="no"
 OPENSSL_CNF="$(openssl version -d | cut -d'"' -f2)/openssl.cnf"
 CONTACT_EMAIL=
 DF_ACCOUNT_REG=0
-DFR=0
 
 set_defaults() {
   # Default config variables depending on BASEDIR
@@ -173,16 +172,26 @@ init_system() {
   
   if [[ ${DF_ACCOUNT_REG} == 1 ]]; then echo " + Finished with the registration"; exit 1; fi
 
-  if [[ "${DFR}" == 0 ]]; then
-      if [[ ${DOMAINS_TXT} == "" ]]; then
-        echo -e "${RED}ERROR:${NC} Domains could not be loaded" >&2
-        exit 1
-      fi
+  if [[ ${DOMAINS_TXT} == "" ]]; then
+    echo -e "${RED}ERROR:${NC} Domains could not be loaded" >&2
+    exit 1
   fi
 }
 
 anti_newline() {
   tr -d '\n\r'
+}
+
+_sed() {
+  if [[ "${OSTYPE}" = "Linux" ]]; then
+    sed -r "${@}"
+  else
+    sed -E "${@}"
+  fi
+}
+
+clean_json() {
+    tr -d '\r\n' | _sed -e 's/ +/ /g' -e 's/\{ /{/g' -e 's/ \}/}/g' -e 's/\[ /[/g' -e 's/ \]/]/g'
 }
 
 urlbase64() {
@@ -364,7 +373,7 @@ sign_domain() {
   for altname in $altnames; do
     # Ask the acme-server for new challenge token and extract them from the resulting json block
     echo " + Requesting challenge for ${altname}..."
-    response="$(signed_request "${CA_NEW_AUTHZ}" '{"resource": "new-authz", "identifier": {"type": "dns", "value": "'"${altname}"'"}}')"
+    response="$(signed_request "${CA_NEW_AUTHZ}" '{"resource": "new-authz", "identifier": {"type": "dns", "value": "'"${altname}"'"}}' | clean_json)"
 
     challenges="$(printf '%s\n' "${response}" | get_json_array challenges)"
     repl=$'\n''{' # fix syntax highlighting in Vim
@@ -391,7 +400,7 @@ sign_domain() {
 
     # Ask the acme-server to verify our challenge and wait until it becomes valid
     echo " + Responding to challenge for ${altname}..."
-    result="$(signed_request "${challenge_uri}" '{"resource": "challenge", "keyAuthorization": "'"${keyauth}"'"}')"
+    result="$(signed_request "${challenge_uri}" '{"resource": "challenge", "keyAuthorization": "'"${keyauth}"'"}' | clean_json)"
 
     status="$(printf '%s\n' "${result}" | get_json_string_value status)"
 
@@ -548,7 +557,7 @@ command_revoke() {
     exit 1
   fi
   cert64="$(openssl x509 -in "${cert}" -inform PEM -outform DER | urlbase64)"
-  response="$(signed_request "${CA_REVOKE_CERT}" '{"resource": "revoke-cert", "certificate": "'"${cert64}"'"}')"
+  response="$(signed_request "${CA_REVOKE_CERT}" '{"resource": "revoke-cert", "certificate": "'"${cert64}"'"}' | clean_json)"
   # if there is a problem with our revoke request _request (via signed_request) will report this and "exit 1" out
   # so if we are here, it is safe to assume the request was successful
   echo -e " ${GREEN}+ SUCCESS${NC}"
